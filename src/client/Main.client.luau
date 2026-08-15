@@ -1,4 +1,13 @@
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Example = require(ReplicatedStorage.Example)
+local controllers = script.Parent:WaitForChild("controllers")
 
-print("[Client] " .. Example.greet("player"))
+local CameraController = require(controllers.CameraController)
+local SelectionController = require(controllers.SelectionController)
+local CommandController = require(controllers.CommandController)
+local HUDController = require(controllers.HUDController)
+
+CameraController.Start()
+local dragFrame = HUDController.Start()
+SelectionController.Start(dragFrame)
+CommandController.Start(SelectionController)
+
+print("[Client] RTS core initialized")
