@@ -49,6 +49,8 @@ local UnitController = require(services.UnitController)
 local EnemyWaveService = require(services.EnemyWaveService)
 
 WorldBuilder.Build()
+print("[Server] Nest exists:", workspace:FindFirstChild("Nest") ~= nil, "FoodNodes:", #workspace.FoodNodes:GetChildren())
+
 UnitController.Init(ColonyService)
 ColonyService.Init(GameState, UnitController, WorldBuilder)
 EnemyWaveService.Init(GameState, ColonyService, WorldBuilder)
