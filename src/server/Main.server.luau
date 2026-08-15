@@ -2,7 +2,6 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 Players.CharacterAutoLoads = false
-workspace.StreamingEnabled = false
 
 local GameConfig = require(ReplicatedStorage.GameConfig)
 
