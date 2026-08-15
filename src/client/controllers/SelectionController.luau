@@ -36,12 +36,9 @@ local function getUnitsInScreenRect(rectMin, rectMax)
 	local camera = workspace.CurrentCamera
 	local results = {}
 	for _, model in CollectionService:GetTagged("PlayerUnit") do
-		local part = model.PrimaryPart
-		if part then
-			local screenPos, onScreen = camera:WorldToViewportPoint(part.Position)
-			if onScreen and screenPos.X >= rectMin.X and screenPos.X <= rectMax.X and screenPos.Y >= rectMin.Y and screenPos.Y <= rectMax.Y then
-				table.insert(results, model)
-			end
+		local screenPos, onScreen = camera:WorldToViewportPoint(model:GetPivot().Position)
+		if onScreen and screenPos.X >= rectMin.X and screenPos.X <= rectMax.X and screenPos.Y >= rectMin.Y and screenPos.Y <= rectMax.Y then
+			table.insert(results, model)
 		end
 	end
 	return results

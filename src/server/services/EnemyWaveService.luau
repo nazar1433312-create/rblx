@@ -41,19 +41,16 @@ end
 local function acquireTarget(position)
 	local nearestUnit, nearestDist
 	for _, unit in CollectionService:GetTagged("PlayerUnit") do
-		local part = unit.PrimaryPart
-		if part then
-			local dist = (part.Position - position).Magnitude
-			if dist <= GameConfig.enemyAggroRadius and (not nearestDist or dist < nearestDist) then
-				nearestUnit, nearestDist = unit, dist
-			end
+		local dist = (unit:GetPivot().Position - position).Magnitude
+		if dist <= GameConfig.enemyAggroRadius and (not nearestDist or dist < nearestDist) then
+			nearestUnit, nearestDist = unit, dist
 		end
 	end
 	if nearestUnit then
-		return nearestUnit.PrimaryPart, nearestUnit:FindFirstChildOfClass("Humanoid"), false
+		return nearestUnit:GetPivot().Position, nearestUnit:FindFirstChildOfClass("Humanoid"), false
 	end
 	local nest = WorldBuilder.GetNest()
-	return nest, nil, true
+	return nest.Position, nil, true
 end
 
 local function spawnEnemy(enemyType)
@@ -66,14 +63,14 @@ local function spawnEnemy(enemyType)
 	local humanoid = model:FindFirstChildOfClass("Humanoid")
 	task.spawn(function()
 		while model.Parent and humanoid.Health > 0 and not GameState.GameOver.Value do
-			local targetPart, targetHumanoid, isNest = acquireTarget(model.PrimaryPart.Position)
-			if not targetPart then
+			local targetPos, targetHumanoid, isNest = acquireTarget(model:GetPivot().Position)
+			if not targetPos then
 				task.wait(0.5)
 				continue
 			end
-			local dist = (targetPart.Position - model.PrimaryPart.Position).Magnitude
+			local dist = (targetPos - model:GetPivot().Position).Magnitude
 			if dist > stats.attackRange then
-				humanoid:MoveTo(targetPart.Position)
+				humanoid:MoveTo(targetPos)
 				task.wait(0.3)
 			elseif isNest then
 				ColonyService.DamageNest(stats.damage)

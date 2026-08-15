@@ -48,12 +48,9 @@ end
 local function findNearestTagged(tag, position, maxRange)
 	local nearest, nearestDist
 	for _, instance in CollectionService:GetTagged(tag) do
-		local part = instance.PrimaryPart
-		if part then
-			local dist = (part.Position - position).Magnitude
-			if dist <= maxRange and (not nearestDist or dist < nearestDist) then
-				nearest, nearestDist = instance, dist
-			end
+		local dist = (instance:GetPivot().Position - position).Magnitude
+		if dist <= maxRange and (not nearestDist or dist < nearestDist) then
+			nearest, nearestDist = instance, dist
 		end
 	end
 	return nearest
@@ -97,17 +94,17 @@ local function runAttack(model, humanoid, data, order)
 		return
 	end
 	local targetHumanoid = target:FindFirstChildOfClass("Humanoid")
-	local targetRoot = target.PrimaryPart
-	if not (targetHumanoid and targetRoot) then
+	if not targetHumanoid then
 		data.order = nil
 		return
 	end
 
 	while data.order == order and humanoid.Health > 0 and target.Parent and targetHumanoid.Health > 0 do
-		local myPos = model.PrimaryPart.Position
-		local dist = (targetRoot.Position - myPos).Magnitude
+		local myPos = model:GetPivot().Position
+		local targetPos = target:GetPivot().Position
+		local dist = (targetPos - myPos).Magnitude
 		if dist > data.stats.attackRange then
-			humanoid:MoveTo(targetRoot.Position)
+			humanoid:MoveTo(targetPos)
 			task.wait(0.2)
 		else
 			targetHumanoid:TakeDamage(data.stats.damage)
@@ -124,7 +121,7 @@ local function unitBrain(model, data)
 	while model.Parent and humanoid.Health > 0 do
 		local order = data.order
 		if order == nil then
-			local enemy = findNearestTagged("Enemy", model.PrimaryPart.Position, GameConfig.guardRadius)
+			local enemy = findNearestTagged("Enemy", model:GetPivot().Position, GameConfig.guardRadius)
 			if enemy then
 				data.order = { kind = "attack", target = enemy }
 			else
